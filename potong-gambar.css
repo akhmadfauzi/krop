@@ -1,0 +1,85 @@
+.container{
+	width: 960px;
+	margin: 0 auto;
+	border: 1px solid #ccc;
+	min-height: 500px;
+	height: auto;
+	display: block;
+}
+
+.canvas{
+	min-height: 500px;
+	width: inherit;
+	height: inherit;
+	display: block;
+	overflow: hidden;
+	position: relative;
+}
+
+.selector-default{
+	position : absolute;
+	width: 0;
+	height: 0;
+	border : .5px dotted #000;
+}
+#data{
+	position: absolute;
+	left: 5px;
+	top: 5px;
+	width: 200px;
+}
+.selector-point{
+	width: 5px;
+	height: 5px;
+	display: block;
+	position: absolute;
+	background-color: #ccc;
+	margin: 0;
+	padding: 0;
+}
+
+.top-left{
+	top:-3px;
+	left: -3px;
+	cursor: se-resize;
+}
+.top-center{
+	top:-3px;
+	left: 50%; 
+	cursor: ns-resize;
+
+}
+.top-right{
+	top:-3px;
+	right:-3px;
+	cursor: ne-resize;
+
+}
+.middle-left{
+	left: -3px;
+	top: 50%; 
+	cursor: ew-resize;
+
+}
+.middle-right{
+	right: -3px;
+	top: 50%; 
+	cursor: ew-resize;
+
+}
+.bottom-left{
+	bottom:-3px;
+	left:-3px;
+	cursor: nesw-resize;
+
+}
+.bottom-center{
+	bottom: -3px;
+	left: 50%; 
+	cursor: ns-resize;
+}
+.bottom-right{
+	bottom:-3px;
+	right:-3px;
+	cursor: nwse-resize;
+}
