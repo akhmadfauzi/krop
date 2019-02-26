@@ -15,7 +15,8 @@ class Potong {
         this.maxLeft = 0;
         this.minLeft = 0;
         this.maxTop = 0;
-        this.minTop = 0;
+		this.minTop = 0;
+		this.mainImage = document.images[0];
     }
 
     run(selector = 'canvas') {
@@ -139,32 +140,43 @@ class Potong {
             }
 
             this.selector.style.height = (height >= 500 ? 500 : height) + 'px';
-            this.selector.style.width = (width >= this.canvas.clientWidth ? this.canvas.clientWidth : width) + 'px';
+			this.selector.style.width = (width >= this.canvas.clientWidth ? this.canvas.clientWidth : width) + 'px';
+			this.setClip(this.initialSelectorX, this.initialSelectorY);
 
-
-            this.data.innerHTML =
-                'Init X : ' + this.initialSelectorX + '<br>' +
-                'Init Y : ' + this.initialSelectorY + '<br>' +
-                '<hr>' +
-                'Client X : ' + e.clientX + '<br>' +
-                'Client Y : ' + e.clientY + '<br>' +
-                '<hr>' +
-                'Screen X : ' + e.screenX + '<br>' +
-                'Screen Y : ' + e.screenY + '<br>' +
-                '<hr>' +
-                'Selector Width : ' + width + '<br>' +
-                'Selector Height : ' + height + '<br>' +
-                '<hr>' +
-                'Left : ' + left + '<br>' +
-                'Right : ' + right + '<br>' +
-                '<hr>' +
-                'Document width : ' + document.body.clientWidth + '<br>' +
-                'Document height : ' + document.body.clientHeight + '<br>' +
-                '<hr>' +
-                'Reverse Mode : ' + this.reverse
-                ;
+            this.displayCoordinates(e, width, height, left, right);
         }
-    }
+	}
+	
+	setClip(x,y){
+		let clipTop = y;
+		let clipRight = this.canvas.clientWidth-x - this.selector.clientWidth-105;
+		let clipBottom = (this.canvas.clientHeight-this.selector.clientHeight-y);
+		let clipLeft =x-105;
+		this.mainImage.style.clipPath = 'inset('+clipTop+'px '+clipRight+'px '+clipBottom+'px '+clipLeft+'px)';
+	}
+
+	displayCoordinates(e, width, height, left, right) {
+		this.data.innerHTML =
+			'Init X : ' + this.initialSelectorX + '<br>' +
+			'Init Y : ' + this.initialSelectorY + '<br>' +
+			'<hr>' +
+			'Client X : ' + e.clientX + '<br>' +
+			'Client Y : ' + e.clientY + '<br>' +
+			'<hr>' +
+			'Screen X : ' + e.screenX + '<br>' +
+			'Screen Y : ' + e.screenY + '<br>' +
+			'<hr>' +
+			'Selector Width : ' + width + '<br>' +
+			'Selector Height : ' + height + '<br>' +
+			'<hr>' +
+			'Left : ' + left + '<br>' +
+			'Right : ' + right + '<br>' +
+			'<hr>' +
+			'Document width : ' + document.body.clientWidth + '<br>' +
+			'Document height : ' + document.body.clientHeight + '<br>' +
+			'<hr>' +
+			'Reverse Mode : ' + this.reverse;
+	}
 
     onClick(e) {
         this.initialSelectorX = e.clientX;
@@ -191,7 +203,9 @@ class Potong {
             this.maxTop = this.canvas.clientHeight - this.selector.clientHeight;
 			
             this.selector.style.top = (currentTop < this.minTop ? this.minTop : (currentTop > this.maxTop ? this.maxTop - 1 : currentTop)) + 'px';
-            this.selector.style.left = (currentLeft > this.maxLeft ? this.maxLeft - 1 : (currentLeft < this.minLeft ? this.minLeft : currentLeft)) + 'px';
+			this.selector.style.left = (currentLeft > this.maxLeft ? this.maxLeft - 1 : (currentLeft < this.minLeft ? this.minLeft : currentLeft)) + 'px';
+			this.setClip(currentLeft, currentTop);
+			
         }
     }
 }

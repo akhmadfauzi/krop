@@ -1,0 +1,42 @@
+.satu{
+	width: 500px;
+}
+
+.dua{
+	width: 200px;
+	height: 250px;
+}
+.dua .clip {
+	position: absolute;
+	clip-path: inset(100px 50px 130px 100px);
+	width: 500px;
+	height: auto;
+	top: 0;
+	left: 0;
+	/* Also can take single values to make all sides the same, or 2 values (vert/horz), or 3 values (top/horz/bottom). */
+  }
+
+.clip:hover, .clip:before{
+	opacity: .5;
+}
+
+.dua:before{
+	display: block;
+	position: absolute;
+	top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+	z-index: -2;
+	opacity: 0;
+	transition: .4s;
+	content: '';
+	background-size: 500px auto;
+	background-repeat: no-repeat;
+	background-image: url(https://images.unsplash.com/photo-1477511350923-3986459bdee1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80) !important;
+}
+
+.satu:hover .dua:before{
+	opacity: .5;
+}
+
