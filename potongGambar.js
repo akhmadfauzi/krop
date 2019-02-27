@@ -1,7 +1,9 @@
 class Potong {
     constructor(obj) {
         this.canvas = document.getElementById(obj.canvas);
-        this.data = document.getElementById('data');
+		this.data = document.getElementById('data');
+		this.krop = document.getElementById('krop');
+		this.output = document.getElementById('output');
         this.windowWidth = window.screen.width;
         this.windowHeight = window.screen.height;
         this.selectorId = (!obj.id) ? obj.id : 'Selector';
@@ -37,8 +39,41 @@ class Potong {
                 'Outer Width : ' + window.outerWidth + '<br>' +
                 'Outer Height : ' + window.outerHeight + '<br>';
 
-        });
-    }
+		});
+		this.krop.addEventListener('click', this.kropHandler.bind(this));
+	}
+	
+	kropHandler(e){
+		this.output.className = 'output-show';
+		var canvas = document.createElement('canvas');
+		var width = document.createAttribute('width');
+		var id = document.createAttribute('id');
+		var height = document.createAttribute('height');
+		width.value = this.selector.clientWidth;
+		id.value = 'CanvasOutput';
+		height.value = this.selector.clientHeight;
+		canvas.setAttributeNode(width);
+		canvas.setAttributeNode(id);
+		canvas.setAttributeNode(height);
+		this.output.appendChild(canvas);				
+
+		this.draw();
+	}
+
+	draw(){
+		var canvas = document.getElementById('CanvasOutput');
+		var ctx = canvas.getContext('2d');
+		var sx = this.selector.style.left;
+		var sy = this.selector.style.right;
+		var sWidth = this.selector.clientWidth;
+		var sHeight = this.selector.clientHeight;
+		console.log(sx, sy, sWidth, sHeight);
+		var dx = sx*1.4;
+		var dy = sy*1.4;
+		var dWidth = sWidth;
+		var dHeight = sHeight;
+		ctx.drawImage(this.mainImage, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+	}
 
     canvasHandler(e) {
         switch (e.type) {
@@ -201,9 +236,11 @@ class Potong {
 
 			this.maxLeft = this.canvas.clientWidth - this.selector.clientWidth;
             this.maxTop = this.canvas.clientHeight - this.selector.clientHeight;
+			currentTop = (currentTop < this.minTop ? this.minTop : (currentTop > this.maxTop ? this.maxTop - 1 : currentTop));
+			currentLeft = (currentLeft > this.maxLeft ? this.maxLeft - 1 : (currentLeft < this.minLeft ? this.minLeft : currentLeft));
 			
-            this.selector.style.top = (currentTop < this.minTop ? this.minTop : (currentTop > this.maxTop ? this.maxTop - 1 : currentTop)) + 'px';
-			this.selector.style.left = (currentLeft > this.maxLeft ? this.maxLeft - 1 : (currentLeft < this.minLeft ? this.minLeft : currentLeft)) + 'px';
+			this.selector.style.top = currentTop + 'px';
+			this.selector.style.left = currentLeft + 'px';
 			this.setClip(currentLeft, currentTop);
 			
         }
