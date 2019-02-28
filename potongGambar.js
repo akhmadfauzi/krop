@@ -41,38 +41,69 @@ class Potong {
 
 		});
 		this.krop.addEventListener('click', this.kropHandler.bind(this));
+		document.addEventListener('click', this.hideModal.bind(this));
+	}
+
+	hideModal(e){
+		var target = e.target;
+		var isActive = this.output.getAttribute('data-active') ? true : false;
+		var isOutside = false;
+		
+		var role = target.getAttribute('role');
+		if(role != 'dialog' || role != 'document'){
+
+		}
+
+		var text = 'Is outside the modal = ' + isOutside + '<br>' + 
+		'Target Element = ' + target.nodeName + '<br>' +
+		'Target Attribute = ' + target.getAttribute('id') + '<br>' +
+		'isActive = ' + isActive + '<br>' +
+		'Target Role = ' + target.getAttribute('role');
+
+		this.data.innerHTML = text;
+
+		
 	}
 	
 	kropHandler(e){
+		var selector = JSON.parse(this.selector.getAttribute('data-selector-details'));
+
 		this.output.className = 'output-show';
+		this.output.dataset.active = true;
 		var canvas = document.createElement('canvas');
 		var width = document.createAttribute('width');
+		var role = document.createAttribute('role');
 		var id = document.createAttribute('id');
 		var height = document.createAttribute('height');
-		width.value = this.selector.clientWidth;
+		
+		role.value = 'document';
+		width.value = Math.round((selector.width)*1.4);
 		id.value = 'CanvasOutput';
-		height.value = this.selector.clientHeight;
+		height.value = Math.round((selector.height)*1.4);
+		
+		canvas.setAttributeNode(role);
 		canvas.setAttributeNode(width);
 		canvas.setAttributeNode(id);
 		canvas.setAttributeNode(height);
+		
 		this.output.appendChild(canvas);				
-
-		this.draw();
+		this.draw(selector);
 	}
 
-	draw(){
+	draw(selector){
 		var canvas = document.getElementById('CanvasOutput');
 		var ctx = canvas.getContext('2d');
-		var sx = this.selector.style.left;
-		var sy = this.selector.style.right;
-		var sWidth = this.selector.clientWidth;
-		var sHeight = this.selector.clientHeight;
-		console.log(sx, sy, sWidth, sHeight);
-		var dx = sx*1.4;
-		var dy = sy*1.4;
+		var sx = Math.round((selector.x-105)*1.4);//(selector.x);
+		var sy = Math.round((selector.y)*1.4);
+		var sWidth = Math.round((selector.width)*1.4);
+		var sHeight = Math.round((selector.height)*1.4) ;
+		// console.log(sx, sy,selector.x, selector.y, Math.round((selector.x-105)*1.4) + ' 1.4 times X');
+		var dx = 0;
+		var dy = 0;
 		var dWidth = sWidth;
 		var dHeight = sHeight;
 		ctx.drawImage(this.mainImage, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+
 	}
 
     canvasHandler(e) {
@@ -142,9 +173,10 @@ class Potong {
                 this.createSelector();
             }
 
-            this.selector = document.getElementById(this.selectorId);
-            this.selector.style.top = (e.clientY - this.bodyMargin) + 'px';
-            this.selector.style.left = (e.clientX - ((document.body.clientWidth - this.canvas.clientWidth) / 2) - this.bodyMargin) + 'px';
+			this.selector = document.getElementById(this.selectorId);
+			this.selector.dataset.selectorDetails = JSON.stringify({x: this.initialSelectorX, y:this.initialSelectorY});
+            this.selector.style.top = this.initialSelectorY + 'px';
+            this.selector.style.left = this.initialSelectorX + 'px';
             this.canvas.addEventListener('mousemove', this.onMove.bind(this));
         }
     }
@@ -177,7 +209,7 @@ class Potong {
             this.selector.style.height = (height >= 500 ? 500 : height) + 'px';
 			this.selector.style.width = (width >= this.canvas.clientWidth ? this.canvas.clientWidth : width) + 'px';
 			this.setClip(this.initialSelectorX, this.initialSelectorY);
-
+			this.selector.dataset.selectorDetails = JSON.stringify({x: this.initialSelectorX, y:this.initialSelectorY, width: width, height: height});
             this.displayCoordinates(e, width, height, left, right);
         }
 	}
@@ -241,6 +273,8 @@ class Potong {
 			
 			this.selector.style.top = currentTop + 'px';
 			this.selector.style.left = currentLeft + 'px';
+			this.selector.dataset.selectorDetails = JSON.stringify({x: currentLeft, y:currentTop, width: this.selector.clientWidth, height: this.selector.clientHeight});
+
 			this.setClip(currentLeft, currentTop);
 			
         }
