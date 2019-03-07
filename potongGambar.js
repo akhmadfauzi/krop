@@ -97,6 +97,7 @@ class Potong {
         this.draw(selector);
         this.output.style.left = ((overlay.clientWidth - this.output.clientWidth) / 2) + 'px';
         this.output.style.top = ((overlay.clientHeight - this.output.clientHeight) / 2) + 'px';
+        overlay.addEventListener('click', ()=>{alert('a')});
         // console.log(this.output.clientWidth, document.body.clientWidth);
 	}
 
@@ -228,7 +229,8 @@ class Potong {
 		let clipTop = y;
 		let clipRight = this.canvas.clientWidth-x - this.selector.clientWidth-105;
 		let clipBottom = (this.canvas.clientHeight-this.selector.clientHeight-y);
-		let clipLeft =x-105;
+        let clipLeft =x-105;
+        
 		this.mainImage.style.clipPath = 'inset('+clipTop+'px '+clipRight+'px '+clipBottom+'px '+clipLeft+'px)';
 	}
 
@@ -277,15 +279,21 @@ class Potong {
         var cClass = document.createAttribute('class');
         var imgClass = document.createAttribute('class');
         var imgSource = document.createAttribute('src');
-        imgSource.value = 'https://images.unsplash.com/photo-1477511350923-3986459bdee1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80';
+        var imgBg = document.createElement('IMG');
+        imgBg.setAttribute('src','img/image-1.jpeg');
+        imgBg.setAttribute('class','image-background');
+
+        imgSource.value = 'img/image-1.jpeg';
         imgClass.value = 'img-krop';
         cClass.value = 'canvas';
+
         cid.value = 'Canvas';
         container.setAttributeNode(cid);
         container.setAttributeNode(cClass);
         image.setAttributeNode(imgClass);
         image.setAttributeNode(imgSource);
         container.appendChild(image);
+        container.appendChild(imgBg);
         this.wrapper.appendChild(container);
     }
 
