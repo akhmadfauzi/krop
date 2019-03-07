@@ -4,7 +4,7 @@ class Potong {
         this.canvas = obj.canvas;
 		this.data = document.getElementById('data');
 		this.krop = 'krop';
-		this.output = 'output';
+		this.output;
         this.windowWidth = window.screen.width;
         this.windowHeight = window.screen.height;
         this.selectorId = (!obj.id) ? obj.id : 'Selector';
@@ -64,6 +64,20 @@ class Potong {
         document.body.className = 'modal-open';
         this.output.className = 'output-show';
     }
+
+    closeModal(e){
+        var target = e.target;
+        if(target.className == 'modal-overlay'){
+            var canvas = document.getElementById('CanvasOutput');
+            var output = document.getElementById('output');
+            output.remove();
+            canvas.remove();
+            target.remove();
+            document.body.removeAttribute('class');
+            
+            
+        }
+    }
 	
 	kropHandler(e){
         if(!this.selector) {
@@ -72,7 +86,7 @@ class Potong {
         };
 
         this.renderOutput();
-        this.output = document.getElementById(this.output);
+        this.output = document.getElementById('output');
         
         var overlay = document.querySelector('.modal-overlay');
         this.toggleModal(overlay);
@@ -97,7 +111,7 @@ class Potong {
         this.draw(selector);
         this.output.style.left = ((overlay.clientWidth - this.output.clientWidth) / 2) + 'px';
         this.output.style.top = ((overlay.clientHeight - this.output.clientHeight) / 2) + 'px';
-        overlay.addEventListener('click', ()=>{alert('a')});
+        overlay.addEventListener('click', this.closeModal);
         // console.log(this.output.clientWidth, document.body.clientWidth);
 	}
 
