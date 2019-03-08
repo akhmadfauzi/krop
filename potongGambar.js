@@ -22,7 +22,7 @@ class Potong {
         this.isResizing;
         this.initialSelectorX;
 		this.initialSelectorY;
-		
+		this.imageSource;
 
 		
     }
@@ -30,16 +30,48 @@ class Potong {
     run() {
 		
 		this.renderCanvas();
-		this.renderCropButton();
+		this.renderButton();
 		this.setImage();
+		
+		this.imageSource = document.getElementById('imageSource');
         this.canvas = document.getElementById(this.canvas);
         this.krop = document.getElementById(this.krop);
 		this.mainImage = document.images[1];
+		this.imageSource.addEventListener('change', this.onImageSourceChange.bind(this));
+		
         this.canvas.addEventListener('click', this.canvasHandler.bind(this));
         this.canvas.addEventListener('mousedown', this.canvasHandler.bind(this));
 		this.canvas.addEventListener('mouseup', this.canvasHandler.bind(this));
 		this.krop.addEventListener('click', this.kropHandler.bind(this));
 		//document.addEventListener('click', this.hideModal.bind(this));
+	}
+
+	onImageSourceChange(e){
+		var target = e.target;
+		var bg = document.getElementById('imageBackground');
+		var hidden = document.getElementById('isChanged');
+		var canvasImage = document.querySelector('.img-krop');
+		var img='';
+		var currentOffsetX = '105px'; //(this.canvas.clientWidth - canvasImage.clientWidth) / 2;
+
+		// console.log(target.files[0]);
+		// bg.setAttribute('src', target.files[0].fileName);
+		var fReader = new FileReader();
+		fReader.readAsDataURL(target.files[0]);
+		fReader.onload  = function(event){
+			img = event.target.result;	
+			canvasImage.src = img;
+			bg.src = img;
+			hidden.value = true;		
+
+		}
+
+		// var hidden = document.getElementById('isChanged');
+		hidden.addEventListener('change', (e)=>{
+			alert('a');
+		});	
+
+	
 	}
 
 	hideModal(e){
@@ -289,7 +321,6 @@ class Potong {
 		let clipRight = this.canvas.clientWidth-x - this.selector.clientWidth-this.sourceOffsetX;
 		let clipBottom = (this.canvas.clientHeight-this.selector.clientHeight-y);
         let clipLeft =x-this.sourceOffsetX;
-		console.log(clipTop,clipRight,clipBottom,clipLeft);
 		this.mainImage.style.clipPath = 'inset('+clipTop+'px '+clipRight+'px '+clipBottom+'px '+clipLeft+'px)';
 	}
 
@@ -339,7 +370,8 @@ class Potong {
         var cid = document.createAttribute('id');
         var cClass = document.createAttribute('class');
         
-        var imgBg = document.createElement('IMG');
+		var imgBg = document.createElement('IMG');
+		imgBg.setAttribute('id','imageBackground');
         imgBg.setAttribute('src','img/image-1.jpeg');
         imgBg.setAttribute('class','image-background');
 		
@@ -369,12 +401,24 @@ class Potong {
 		container.appendChild(image);
 	}
 
-    renderCropButton(){
+    renderButton(){
         var container = document.createElement('DIV');
-        var button = document.createElement('button');
-        button.setAttribute('id','krop');
-        button.textContent = 'Krop';
-        container.appendChild(button);
+		var cropButton = document.createElement('button');
+		var hidden = document.createElement('input');
+		var file = document.createElement('input');
+		cropButton.setAttribute('id','krop');
+		file.setAttribute('id', 'imageSource');
+		file.setAttribute('type', 'file');
+		hidden.setAttribute('type', 'hidden');
+		hidden.setAttribute('id', 'isChanged');
+		hidden.setAttribute('value', false);
+
+		cropButton.textContent = 'Krop';
+		container.style.marginTop = '6px';
+		container.appendChild(file);
+		container.appendChild(cropButton);
+		container.appendChild(hidden);
+		
         this.wrapper.appendChild(container);
     }
 
