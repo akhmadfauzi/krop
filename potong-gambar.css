@@ -51,8 +51,9 @@ body{
 }
 
 #output canvas{
-	max-width: 300px;
+	max-width: 400px;
 	max-height: 400px;
+	min-height: 250px;
 	width: auto;
 	height: auto;
 }

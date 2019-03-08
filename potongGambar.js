@@ -8,7 +8,8 @@ class Potong {
         this.windowWidth = window.screen.width;
         this.windowHeight = window.screen.height;
         this.selectorId = (!obj.id) ? obj.id : 'Selector';
-        this.reverse = false;
+		this.reverseX = false;
+		this.reverseY = false;
         this.isMoving = false;
         this.bodyMargin = parseInt(window.getComputedStyle(document.body).getPropertyValue('margin'));
         this.maxLeft = 0;
@@ -16,23 +17,27 @@ class Potong {
         this.maxTop = 0;
 		this.minTop = 0;
         this.mainImage;
-
+		this.maxHeight = 500;
         this.selector;
         this.isResizing;
         this.initialSelectorX;
-        this.initialSelectorY;
+		this.initialSelectorY;
+		
+
+		
     }
 
     run() {
-        
-        this.renderCanvas();
-        this.renderCropButton();
+		
+		this.renderCanvas();
+		this.renderCropButton();
+		this.setImage();
         this.canvas = document.getElementById(this.canvas);
         this.krop = document.getElementById(this.krop);
-        this.mainImage = document.images[0];
+		this.mainImage = document.images[1];
         this.canvas.addEventListener('click', this.canvasHandler.bind(this));
         this.canvas.addEventListener('mousedown', this.canvasHandler.bind(this));
-        this.canvas.addEventListener('mouseup', this.canvasHandler.bind(this));
+		this.canvas.addEventListener('mouseup', this.canvasHandler.bind(this));
 		this.krop.addEventListener('click', this.kropHandler.bind(this));
 		//document.addEventListener('click', this.hideModal.bind(this));
 	}
@@ -85,11 +90,12 @@ class Potong {
             return false;
         };
 
-        this.renderOutput();
+		this.renderOutput();
+		this.imgWidthRatio = this.mainImage.naturalWidth / this.mainImage.clientWidth;
+		
         this.output = document.getElementById('output');
-        
         var overlay = document.querySelector('.modal-overlay');
-        this.toggleModal(overlay);
+        
 		var selector = JSON.parse(this.selector.getAttribute('data-selector-details'));
 		var canvas = document.createElement('canvas');
 		var width = document.createAttribute('width');
@@ -98,40 +104,51 @@ class Potong {
 		var height = document.createAttribute('height');
 		
 		role.value = 'document';
-		width.value = Math.round((selector.width)*1.4);
+		width.value = Math.round((selector.width)*this.imgWidthRatio);
 		id.value = 'CanvasOutput';
-		height.value = Math.round((selector.height)*1.4);
+		height.value = Math.round((selector.height)*this.imgWidthRatio);
 		
-		canvas.setAttributeNode(role);
-		canvas.setAttributeNode(width);
-		canvas.setAttributeNode(id);
-		canvas.setAttributeNode(height);
-		
-		this.output.appendChild(canvas);				
-        this.draw(selector);
-        this.output.style.left = ((overlay.clientWidth - this.output.clientWidth) / 2) + 'px';
-        this.output.style.top = ((overlay.clientHeight - this.output.clientHeight) / 2) + 'px';
-        overlay.addEventListener('click', this.closeModal);
+		if(isNaN(width.value)) { 
+			alert('make sure selec area');
+			return false; 
+		}
+			
+			canvas.setAttributeNode(role);
+			canvas.setAttributeNode(width);
+			canvas.setAttributeNode(id);
+			canvas.setAttributeNode(height);
+			
+			this.output.appendChild(canvas);				
+			this.toggleModal(overlay);	
+			this.draw(selector);
+			
+			this.output.style.left = ((overlay.clientWidth - this.output.clientWidth) / 2) + 'px';
+			this.output.style.top = ((overlay.clientHeight - this.output.clientHeight) / 2) + 'px';
+			overlay.addEventListener('click', this.closeModal);
         // console.log(this.output.clientWidth, document.body.clientWidth);
 	}
 
-	draw(selector){
+	/** 
+	 * Draw to a canvas 
+	*/
+	draw(selector){		
 		var canvas = document.getElementById('CanvasOutput');
-		var ctx = canvas.getContext('2d');
-		var sx = Math.round((selector.x-105)*1.4);//(selector.x);
-		var sy = Math.round((selector.y)*1.4);
-		var sWidth = Math.round((selector.width)*1.4);
-		var sHeight = Math.round((selector.height)*1.4) ;
-		// console.log(sx, sy,selector.x, selector.y, Math.round((selector.x-105)*1.4) + ' 1.4 times X');
-		var dx = 0;
-		var dy = 0;
-		var dWidth = sWidth;
-		var dHeight = sHeight;
-		ctx.drawImage(this.mainImage, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+		var context = canvas.getContext('2d');
+		var sourceX = Math.round((selector.x-this.sourceOffsetX)*this.imgWidthRatio);//(selector.x);
+		var sourceY = Math.round((selector.y)*this.imgWidthRatio);
+		var sourceWidth = Math.round((selector.width)*this.imgWidthRatio);
+		var sourceHeight = Math.round((selector.height)*this.imgWidthRatio) ;
+		var destinationX = 0;
+		var destinationY = 0;
+		var destinationWidth = sourceWidth;
+		var destinationHeight = sourceHeight;
+		context.drawImage(this.mainImage, sourceX, sourceY, sourceWidth, sourceHeight, destinationX, destinationY, destinationWidth, destinationHeight);
 
 	}
 
     canvasHandler(e) {
+		// Initialize offsetX of displayed image to the canvas wrapper
+		this.sourceOffsetX = (this.canvas.clientWidth - this.mainImage.clientWidth) / 2;
         switch (e.type) {
             case 'click':
                 this.onClick(e);
@@ -147,6 +164,11 @@ class Potong {
         }
     }
 
+	/**
+	 * 
+	 * @param {*} e aadasdasd
+	 * Create Selector on mouse event
+	 */
     createSelector(e) {
         let selector = document.createElement('div');
         let id = document.createAttribute('id');
@@ -157,6 +179,7 @@ class Potong {
         this.canvas.appendChild(selector);
     }
 
+	// Dinamycally create selector points
     createSelectorPoints() {
         var pointsDom = [];
         let points = ['topLeft', 'topCenter', 'topRight', 'middleLeft', 'middleRight', 'bottomLeft', 'bottomCenter', 'bottomRight'];
@@ -181,6 +204,9 @@ class Potong {
     }
 
     onMouseDown(e) {
+		if(this.mainImage.getAttribute('style') != '') {
+			this.mainImage.removeAttribute('style');
+		}
         if (e.target.id == 'Selector') {
             this.isMoving = true;
             this.canvas.addEventListener('mousemove', this.onSelectorMouseMove.bind(this));
@@ -215,23 +241,42 @@ class Potong {
             let right = (e.clientX - ((document.body.clientWidth - this.canvas.clientWidth) / 2) - this.bodyMargin);
 			
             if (width < 0) {
-                if (this.reverse == false) {
-                    this.reverse = true;
-                    this.selector.style.removeProperty('left');
-                    this.selector.style.right = this.canvas.clientWidth - this.initialSelectorX + 'px';
+                if (this.reverseX == false) {
+                    this.reverseX = true;
+					this.selector.style.removeProperty('left');
+					this.selector.style.right = this.canvas.clientWidth - this.initialSelectorX + 'px';
+					// this.selector.style.removeProperty('top');
+					// this.selector.style.bottom = this.canvas.clientHeight - this.initialSelectorY + 'px';
                 }
-                width = parseInt(width.toString().replace('-', ''));
+				width = parseInt(width.toString().replace('-', ''));
 
 
             } else {
-                if (this.reverse == true) {
-                    this.reverse = false;
-                    this.selector.style.removeProperty('right');
-                    this.selector.style.left = (this.initialSelectorX) + 'px';
+                if (this.reverseX == true) {
+                    this.reverseX = false;
+					this.selector.style.removeProperty('right');
+					this.selector.style.left = (this.initialSelectorX) + 'px';
+					// this.selector.style.removeProperty('bottom');
+					// this.selector.style.top = this.initialSelectorY + 'px';
                 }
-            }
+			}
+			
+			if(height < 0){
+				if (this.reverseY == false) {
+                    this.reverseY = true;
+					this.selector.style.removeProperty('top');
+					this.selector.style.bottom = this.canvas.clientHeight - this.initialSelectorY + 'px';
+                }
+				height = parseInt(height.toString().replace('-', ''));
+			}else{
+				if (this.reverseY == true) {
+                    this.reverseY = false;
+					this.selector.style.removeProperty('bottom');
+					this.selector.style.top = this.initialSelectorY + 'px';
+                }
+			}
 
-            this.selector.style.height = (height >= 500 ? 500 : height) + 'px';
+            this.selector.style.height = (height >= this.maxHeight ? this.maxHeight : height) + 'px';
 			this.selector.style.width = (width >= this.canvas.clientWidth ? this.canvas.clientWidth : width) + 'px';
 			this.setClip(this.initialSelectorX, this.initialSelectorY);
 			this.selector.dataset.selectorDetails = JSON.stringify({x: this.initialSelectorX, y:this.initialSelectorY, width: width, height: height});
@@ -241,23 +286,26 @@ class Potong {
 	
 	setClip(x,y){
 		let clipTop = y;
-		let clipRight = this.canvas.clientWidth-x - this.selector.clientWidth-105;
+		let clipRight = this.canvas.clientWidth-x - this.selector.clientWidth-this.sourceOffsetX;
 		let clipBottom = (this.canvas.clientHeight-this.selector.clientHeight-y);
-        let clipLeft =x-105;
-        
+        let clipLeft =x-this.sourceOffsetX;
+		console.log(clipTop,clipRight,clipBottom,clipLeft);
 		this.mainImage.style.clipPath = 'inset('+clipTop+'px '+clipRight+'px '+clipBottom+'px '+clipLeft+'px)';
 	}
 
 	
 
     onClick(e) {
+	
+		
         this.initialSelectorX = e.clientX;
         this.initialSelectorY = e.clientY;
     }
 
     onMouseUp(e) {
         this.isResizing = false;
-        this.isMoving = false;
+		this.isMoving = false;
+	
     }
 
     onSelectorMouseDown(e) {
@@ -287,29 +335,39 @@ class Potong {
 
     renderCanvas(){
         var container = document.createElement('DIV');
-        var image = document.createElement('IMG');
-
+		
         var cid = document.createAttribute('id');
         var cClass = document.createAttribute('class');
-        var imgClass = document.createAttribute('class');
-        var imgSource = document.createAttribute('src');
+        
         var imgBg = document.createElement('IMG');
         imgBg.setAttribute('src','img/image-1.jpeg');
         imgBg.setAttribute('class','image-background');
-
-        imgSource.value = 'img/image-1.jpeg';
-        imgClass.value = 'img-krop';
-        cClass.value = 'canvas';
-
+		
+        
+		
+		cClass.value = 'canvas';
         cid.value = 'Canvas';
         container.setAttributeNode(cid);
         container.setAttributeNode(cClass);
-        image.setAttributeNode(imgClass);
-        image.setAttributeNode(imgSource);
-        container.appendChild(image);
+        
         container.appendChild(imgBg);
-        this.wrapper.appendChild(container);
-    }
+		this.wrapper.appendChild(container);
+	}
+	
+	setImage(){
+		var container = document.getElementById('Canvas');
+		var image = document.createElement('IMG');
+		var imgClass = document.createAttribute('class');
+		var imgSource = document.createAttribute('src');
+		
+        imgSource.value = 'img/image-1.jpeg';
+		imgClass.value = 'img-krop';
+		
+        image.setAttributeNode(imgClass);
+		image.setAttributeNode(imgSource);
+		
+		container.appendChild(image);
+	}
 
     renderCropButton(){
         var container = document.createElement('DIV');
@@ -349,7 +407,7 @@ class Potong {
 			'Document width : ' + document.body.clientWidth + '<br>' +
 			'Document height : ' + document.body.clientHeight + '<br>' +
 			'<hr>' +
-			'Reverse Mode : ' + this.reverse;
+			'Reverse Mode : ' + this.reverseX;
 	}
 }
 
