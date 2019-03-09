@@ -17,7 +17,8 @@ class Potong {
         this.maxTop = 0;
 		this.minTop = 0;
         this.mainImage;
-		this.maxHeight = 500;
+        this.maxHeight = 500;
+        this.maxWidth = 960;
         this.selector;
         this.isResizing;
         this.initialSelectorX;
@@ -64,12 +65,20 @@ class Potong {
 			bg.src = img;
 			hidden.value = true;		
 
-		}
+        }
+        
+        canvasImage.addEventListener('load', (e)=>{
+            var target = e.path[0];
+            var currentOffsetX = (this.canvas.clientWidth - target.clientWidth) / 2;
+            canvasImage.style.left = currentOffsetX + 'px';
+            canvasImage.dataset.offsetX = currentOffsetX;
+            bg.style.left = currentOffsetX + 'px';
+        });
 
 		// var hidden = document.getElementById('isChanged');
-		hidden.addEventListener('change', (e)=>{
-			alert('a');
-		});	
+		// hidden.addEventListener('change', (e)=>{
+		// 	alert('a');
+		// });	
 
 	
 	}
@@ -173,7 +182,8 @@ class Potong {
 		var destinationX = 0;
 		var destinationY = 0;
 		var destinationWidth = sourceWidth;
-		var destinationHeight = sourceHeight;
+        var destinationHeight = sourceHeight;
+        
 		context.drawImage(this.mainImage, sourceX, sourceY, sourceWidth, sourceHeight, destinationX, destinationY, destinationWidth, destinationHeight);
 
 	}
@@ -211,7 +221,9 @@ class Potong {
         this.canvas.appendChild(selector);
     }
 
-	// Dinamycally create selector points
+	/**
+     * Dinamycally create selector points
+     *  */ 
     createSelectorPoints() {
         var pointsDom = [];
         let points = ['topLeft', 'topCenter', 'topRight', 'middleLeft', 'middleRight', 'bottomLeft', 'bottomCenter', 'bottomRight'];
@@ -237,7 +249,8 @@ class Potong {
 
     onMouseDown(e) {
 		if(this.mainImage.getAttribute('style') != '') {
-			this.mainImage.removeAttribute('style');
+            this.mainImage.removeAttribute('style');
+            this.mainImage.style.left = this.mainImage.dataset.offsetX + 'px';
 		}
         if (e.target.id == 'Selector') {
             this.isMoving = true;
@@ -277,12 +290,8 @@ class Potong {
                     this.reverseX = true;
 					this.selector.style.removeProperty('left');
 					this.selector.style.right = this.canvas.clientWidth - this.initialSelectorX + 'px';
-					// this.selector.style.removeProperty('top');
-					// this.selector.style.bottom = this.canvas.clientHeight - this.initialSelectorY + 'px';
                 }
 				width = parseInt(width.toString().replace('-', ''));
-
-
             } else {
                 if (this.reverseX == true) {
                     this.reverseX = false;
