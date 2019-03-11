@@ -1,3 +1,5 @@
+'use strict';
+
 class Potong {
 	constructor(obj) {
 		this.wrapper = document.getElementById('kropBar');
