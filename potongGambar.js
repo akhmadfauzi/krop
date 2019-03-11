@@ -24,8 +24,7 @@ class Potong {
         this.initialSelectorX;
 		this.initialSelectorY;
 		this.imageSource;
-
-		
+		this.mouseEvent;
     }
 
     run() {
@@ -44,7 +43,6 @@ class Potong {
         this.canvas.addEventListener('mousedown', this.canvasHandler.bind(this));
 		this.canvas.addEventListener('mouseup', this.canvasHandler.bind(this));
 		this.krop.addEventListener('click', this.kropHandler.bind(this));
-		//document.addEventListener('click', this.hideModal.bind(this));
 	}
 
 	onImageSourceChange(e){
@@ -53,10 +51,7 @@ class Potong {
 		var hidden = document.getElementById('isChanged');
 		var canvasImage = document.querySelector('.img-krop');
 		var img='';
-		var currentOffsetX = '105px'; //(this.canvas.clientWidth - canvasImage.clientWidth) / 2;
 
-		// console.log(target.files[0]);
-		// bg.setAttribute('src', target.files[0].fileName);
 		var fReader = new FileReader();
 		fReader.readAsDataURL(target.files[0]);
 		fReader.onload  = function(event){
@@ -64,7 +59,6 @@ class Potong {
 			canvasImage.src = img;
 			bg.src = img;
 			hidden.value = true;		
-
         }
         
         canvasImage.addEventListener('load', (e)=>{
@@ -74,36 +68,8 @@ class Potong {
             canvasImage.dataset.offsetX = currentOffsetX;
             bg.style.left = currentOffsetX + 'px';
         });
-
-		// var hidden = document.getElementById('isChanged');
-		// hidden.addEventListener('change', (e)=>{
-		// 	alert('a');
-		// });	
-
-	
 	}
 
-	hideModal(e){
-		var target = e.target;
-		var isActive = this.output.getAttribute('data-active') ? true : false;
-		var isOutside = false;
-		
-		var role = target.getAttribute('role');
-		if(role != 'dialog' || role != 'document'){
-
-		}
-
-		var text = 'Is outside the modal = ' + isOutside + '<br>' + 
-		'Target Element = ' + target.nodeName + '<br>' +
-		'Target Attribute = ' + target.getAttribute('id') + '<br>' +
-		'isActive = ' + isActive + '<br>' +
-		'Target Role = ' + target.getAttribute('role');
-
-		this.data.innerHTML = text;
-
-		
-    }
-    
     toggleModal(overlay){
         var target = overlay.target;
         overlay.style.display = 'block';
@@ -170,24 +136,27 @@ class Potong {
 	}
 
 	/** 
-	 * Draw to a canvas 
+	 * Draw onto canvas 
 	*/
-	draw(selector){		
+	draw(selector){	
+		let left = (this.mouseEvent.clientX - ((document.body.clientWidth - this.canvas.clientWidth) / 2) - this.bodyMargin);
 		var canvas = document.getElementById('CanvasOutput');
 		var context = canvas.getContext('2d');
-		var sourceX = Math.round((selector.x-this.sourceOffsetX)*this.imgWidthRatio);//(selector.x);
-		var sourceY = Math.round((selector.y)*this.imgWidthRatio);
+		var sourceX = Math.round((this.reverseX ? (left-this.sourceOffsetX) : (selector.x-this.sourceOffsetX))*this.imgWidthRatio);//(selector.x);
+		var sourceY = Math.round((this.reverseY ? (this.mouseEvent.clientY-this.bodyMargin) : selector.y)*this.imgWidthRatio);
 		var sourceWidth = Math.round((selector.width)*this.imgWidthRatio);
 		var sourceHeight = Math.round((selector.height)*this.imgWidthRatio) ;
 		var destinationX = 0;
 		var destinationY = 0;
 		var destinationWidth = sourceWidth;
         var destinationHeight = sourceHeight;
-        
 		context.drawImage(this.mainImage, sourceX, sourceY, sourceWidth, sourceHeight, destinationX, destinationY, destinationWidth, destinationHeight);
-
 	}
 
+	/**
+	 * 
+	 * @param {*} e mouse event
+	 */
     canvasHandler(e) {
 		// Initialize offsetX of displayed image to the canvas wrapper
 		this.sourceOffsetX = (this.canvas.clientWidth - this.mainImage.clientWidth) / 2;
@@ -208,23 +177,23 @@ class Potong {
 
 	/**
 	 * 
-	 * @param {*} e aadasdasd
-	 * Create Selector on mouse event
+	 * @function # apply generated selector points and render to the document
+	 * @returns void
 	 */
-    createSelector(e) {
+    createSelector() {
         let selector = document.createElement('div');
         let id = document.createAttribute('id');
         id.value = this.selectorId;
         selector.setAttributeNode(id);
         selector.className = 'selector-default';
-        this.createSelectorPoints().forEach(element => selector.appendChild(element));
+        this.generateSelectorPoints().forEach(element => selector.appendChild(element));
         this.canvas.appendChild(selector);
     }
 
 	/**
-     * Dinamycally create selector points
-     *  */ 
-    createSelectorPoints() {
+	 * @function # generate selector points for selector interface automatically
+	 */
+    generateSelectorPoints() {
         var pointsDom = [];
         let points = ['topLeft', 'topCenter', 'topRight', 'middleLeft', 'middleRight', 'bottomLeft', 'bottomCenter', 'bottomRight'];
         let pointIds = ['idTopLeft', 'idTopCenter', 'idTopRight', 'idMiddleLeft', 'idMiddleRight', 'idBottomLeft', 'idBottomCenter', 'idBottomRight'];
@@ -247,11 +216,17 @@ class Potong {
 
     }
 
+	/**
+	 * 
+	 * @param {*} e 
+	 * @event MouseDown 
+	 */
     onMouseDown(e) {
 		if(this.mainImage.getAttribute('style') != '') {
             this.mainImage.removeAttribute('style');
             this.mainImage.style.left = this.mainImage.dataset.offsetX + 'px';
 		}
+
         if (e.target.id == 'Selector') {
             this.isMoving = true;
             this.canvas.addEventListener('mousemove', this.onSelectorMouseMove.bind(this));
@@ -276,7 +251,6 @@ class Potong {
             this.canvas.addEventListener('mousemove', this.onMove.bind(this));
         }
     }
-
 
     onMove(e) {
         if (this.isResizing) {
@@ -317,36 +291,35 @@ class Potong {
                 }
 			}
 
+			this.mouseEvent = e;
             this.selector.style.height = (height >= this.maxHeight ? this.maxHeight : height) + 'px';
 			this.selector.style.width = (width >= this.canvas.clientWidth ? this.canvas.clientWidth : width) + 'px';
-			this.setClip(this.initialSelectorX, this.initialSelectorY);
+			this.setClip(this.initialSelectorX, this.initialSelectorY, e);
 			this.selector.dataset.selectorDetails = JSON.stringify({x: this.initialSelectorX, y:this.initialSelectorY, width: width, height: height});
-            // this.displayCoordinates(e, width, height, left, right);
+            this.displayCoordinates(e, width, height, left, right);
         }
 	}
+
+	onMouseUp(e) {
+        this.isResizing = false;
+		this.isMoving = false;
+    }
 	
-	setClip(x,y){
-		let clipTop = y;
-		let clipRight = this.canvas.clientWidth-x - this.selector.clientWidth-this.sourceOffsetX;
-		let clipBottom = (this.canvas.clientHeight-this.selector.clientHeight-y);
-        let clipLeft =x-this.sourceOffsetX;
+	setClip(x,y,e){
+		let left = (e.clientX - ((document.body.clientWidth - this.canvas.clientWidth) / 2) - this.bodyMargin);
+		let clipTop = this.reverseY ? e.clientY-this.bodyMargin:y;
+		let clipBottom = this.reverseY ? (this.canvas.clientHeight - y) : (this.canvas.clientHeight - this.selector.clientHeight-y);
+		let clipRight = this.reverseX ? (this.canvas.clientWidth-x-this.sourceOffsetX) : (this.canvas.clientWidth- x - this.selector.clientWidth-this.sourceOffsetX);
+        let clipLeft = this.reverseX ? (left - this.sourceOffsetX) : (x - this.sourceOffsetX);
 		this.mainImage.style.clipPath = 'inset('+clipTop+'px '+clipRight+'px '+clipBottom+'px '+clipLeft+'px)';
 	}
 
-	
-
     onClick(e) {
-	
-		
         this.initialSelectorX = e.clientX;
         this.initialSelectorY = e.clientY;
     }
 
-    onMouseUp(e) {
-        this.isResizing = false;
-		this.isMoving = false;
-	
-    }
+
 
     onSelectorMouseDown(e) {
         if (this.isResizing) {
@@ -383,8 +356,6 @@ class Potong {
 		imgBg.setAttribute('id','imageBackground');
         imgBg.setAttribute('src','img/image-1.jpeg');
         imgBg.setAttribute('class','image-background');
-		
-        
 		
 		cClass.value = 'canvas';
         cid.value = 'Canvas';
@@ -460,7 +431,8 @@ class Potong {
 			'Document width : ' + document.body.clientWidth + '<br>' +
 			'Document height : ' + document.body.clientHeight + '<br>' +
 			'<hr>' +
-			'Reverse Mode : ' + this.reverseX;
+			'Reverse X : ' + this.reverseX + '<br>' +
+			'Reverse Y : ' + this.reverseY;
 	}
 }
 
