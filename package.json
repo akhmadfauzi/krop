@@ -1,0 +1,31 @@
+{
+  "name": "krop",
+  "version": "1.0.0",
+  "description": "Potong gambar",
+  "main": "potongGambar.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhmadfauzi/potonggambar.git"
+  },
+  "keywords": [
+    "potong",
+    "gambar"
+  ],
+  "author": "Akhmad Fauzi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akhmadfauzi/potonggambar/issues"
+  },
+  "homepage": "https://github.com/akhmadfauzi/potonggambar#readme",
+  "devDependencies": {
+    "eslint": "^5.15.1",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
+  }
+}
