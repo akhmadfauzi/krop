@@ -43,8 +43,6 @@ body{
 	width: auto;
 	height: auto;
 	background: #ccc;
-	/* bottom: 25%;
-	right: 25%; */
 	padding: 5px;
 	border-radius: 5px;
 	z-index: 10;
@@ -63,7 +61,6 @@ body{
 }
 
 .btn-download{
-	
 	border-radius: 5px;
 	display: block;
 	max-width: 100px;

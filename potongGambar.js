@@ -45,6 +45,7 @@ class Potong {
 		this.canvas.addEventListener('mousedown', this.canvasHandler.bind(this));
 		this.canvas.addEventListener('mouseup', this.canvasHandler.bind(this));
 		this.krop.addEventListener('click', this.kropHandler.bind(this));
+		
 	}
 
 	onImageSourceChange(e) {
@@ -118,6 +119,7 @@ class Potong {
 		
 		button.textContent = 'Download';
 		button.className = 'btn-download';
+		
 
 		if (isNaN(width.value)) {
 			alert('make sure selec area');
@@ -128,7 +130,7 @@ class Potong {
 		canvas.setAttributeNode(width);
 		canvas.setAttributeNode(id);
 		canvas.setAttributeNode(height);
-		
+		canvas.setAttribute('crossOrigin', 'anonymous');
 		this.output.appendChild(canvas);
 		this.output.appendChild(button);
 		this.toggleModal(overlay);
@@ -140,13 +142,20 @@ class Potong {
 		// console.log(this.output.clientWidth, document.body.clientWidth);
 	}
 
+	download(){
+		var canvas = document.querySelector('canvas');
+		var img    = canvas.toDataURL('image/png');
+		document.write('<img src='+img+'/>');
+	}
+
 	/** 
 	 * Draw onto canvas 
 	*/
 	draw(selector) {
-		
+		let download = document.querySelector('.btn-download');
 		let left = (this.mouseEvent.clientX - ((document.body.clientWidth - this.canvas.clientWidth) / 2) - this.bodyMargin);
 		let canvas = document.getElementById('CanvasOutput');
+		// canvas.setAttribute('crossOrigin', 'anonymous');
 		let context = canvas.getContext('2d');
 		let sourceX = Math.round((this.reverseX ? (left - this.sourceOffsetX) : (selector.x - this.sourceOffsetX)) * this.imgWidthRatio);//(selector.x);
 		let sourceY = Math.round((this.reverseY ? (this.mouseEvent.clientY - this.bodyMargin) : selector.y) * this.imgWidthRatio);
@@ -156,7 +165,9 @@ class Potong {
 		let destinationY = 0;
 		let destinationWidth = sourceWidth;
 		let destinationHeight = sourceHeight;
+		
 		context.drawImage(this.mainImage, sourceX, sourceY, sourceWidth, sourceHeight, destinationX, destinationY, destinationWidth, destinationHeight);
+		download.addEventListener('click', this.download);
 	}
 
 	/**
@@ -368,11 +379,13 @@ class Potong {
 		var imgClass = document.createAttribute('class');
 		var imgSource = document.createAttribute('src');
 
-		imgSource.value = 'img/image-1.jpeg';
+		imgSource.value = '../image-1.jpeg';
 		imgClass.value = 'img-krop';
+
 
 		image.setAttributeNode(imgClass);
 		image.setAttributeNode(imgSource);
+		// image.setAttribute('crossOrigin', 'Anonymous');
 
 		container.appendChild(image);
 	}
