@@ -102,19 +102,22 @@ class Potong {
 		this.imgWidthRatio = this.mainImage.naturalWidth / this.mainImage.clientWidth;
 
 		this.output = document.getElementById('output');
-		var overlay = document.querySelector('.modal-overlay');
+		let overlay = document.querySelector('.modal-overlay');
 
-		var selector = JSON.parse(this.selector.getAttribute('data-selector-details'));
-		var canvas = document.createElement('canvas');
-		var width = document.createAttribute('width');
-		var role = document.createAttribute('role');
-		var id = document.createAttribute('id');
-		var height = document.createAttribute('height');
-
+		let selector = JSON.parse(this.selector.getAttribute('data-selector-details'));
+		let canvas = document.createElement('canvas');
+		let width = document.createAttribute('width');
+		let role = document.createAttribute('role');
+		let id = document.createAttribute('id');
+		let height = document.createAttribute('height');
+		let button = document.createElement('button');
 		role.value = 'document';
 		width.value = Math.round((selector.width) * this.imgWidthRatio);
 		id.value = 'CanvasOutput';
 		height.value = Math.round((selector.height) * this.imgWidthRatio);
+		
+		button.textContent = 'Download';
+		button.className = 'btn-download';
 
 		if (isNaN(width.value)) {
 			alert('make sure selec area');
@@ -125,8 +128,9 @@ class Potong {
 		canvas.setAttributeNode(width);
 		canvas.setAttributeNode(id);
 		canvas.setAttributeNode(height);
-
+		
 		this.output.appendChild(canvas);
+		this.output.appendChild(button);
 		this.toggleModal(overlay);
 		this.draw(selector);
 
@@ -140,17 +144,18 @@ class Potong {
 	 * Draw onto canvas 
 	*/
 	draw(selector) {
+		
 		let left = (this.mouseEvent.clientX - ((document.body.clientWidth - this.canvas.clientWidth) / 2) - this.bodyMargin);
-		var canvas = document.getElementById('CanvasOutput');
-		var context = canvas.getContext('2d');
-		var sourceX = Math.round((this.reverseX ? (left - this.sourceOffsetX) : (selector.x - this.sourceOffsetX)) * this.imgWidthRatio);//(selector.x);
-		var sourceY = Math.round((this.reverseY ? (this.mouseEvent.clientY - this.bodyMargin) : selector.y) * this.imgWidthRatio);
-		var sourceWidth = Math.round((selector.width) * this.imgWidthRatio);
-		var sourceHeight = Math.round((selector.height) * this.imgWidthRatio);
-		var destinationX = 0;
-		var destinationY = 0;
-		var destinationWidth = sourceWidth;
-		var destinationHeight = sourceHeight;
+		let canvas = document.getElementById('CanvasOutput');
+		let context = canvas.getContext('2d');
+		let sourceX = Math.round((this.reverseX ? (left - this.sourceOffsetX) : (selector.x - this.sourceOffsetX)) * this.imgWidthRatio);//(selector.x);
+		let sourceY = Math.round((this.reverseY ? (this.mouseEvent.clientY - this.bodyMargin) : selector.y) * this.imgWidthRatio);
+		let sourceWidth = Math.round((selector.width) * this.imgWidthRatio);
+		let sourceHeight = Math.round((selector.height) * this.imgWidthRatio);
+		let destinationX = 0;
+		let destinationY = 0;
+		let destinationWidth = sourceWidth;
+		let destinationHeight = sourceHeight;
 		context.drawImage(this.mainImage, sourceX, sourceY, sourceWidth, sourceHeight, destinationX, destinationY, destinationWidth, destinationHeight);
 	}
 
