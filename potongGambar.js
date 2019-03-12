@@ -26,7 +26,7 @@ class Potong {
 		this.initialSelectorX;
 		this.initialSelectorY;
 		this.browsedImage;
-		this.imageSource = 'https://images.pexels.com/photos/1233528/pexels-photo-1233528.jpeg';
+		this.imageSource = 'https://images.pexels.com/photos/434213/pexels-photo-434213.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260';
 		this.mouseEvent;
 
 	}
@@ -128,26 +128,57 @@ class Potong {
 			return false;
 		}
 
+
+
 		canvas.setAttributeNode(role);
 		canvas.setAttributeNode(width);
 		canvas.setAttributeNode(id);
 		canvas.setAttributeNode(height);
-		canvas.setAttribute('crossOrigin', 'anonymous');
+
+		
+		
 		this.output.appendChild(canvas);
 		this.output.appendChild(button);
 		this.toggleModal(overlay);
 		this.draw(selector);
 
+		canvas.toBlob(function(blob){
+			var url = URL.createObjectURL(blob);
+			// e.target.href = url;
+			button.setAttribute('href', url);
+			button.setAttribute('download', 'cropped.jpeg');
+		});
+		// button.addEventListener('click', this.download);
+
+
 		this.output.style.left = ((overlay.clientWidth - this.output.clientWidth) / 2) + 'px';
 		this.output.style.top = ((overlay.clientHeight - this.output.clientHeight) / 2) + 'px';
+	
 		overlay.addEventListener('click', this.closeModal);
 		// console.log(this.output.clientWidth, document.body.clientWidth);
 	}
 
 	download(e){
-		var canvas = document.querySelector('canvas');
-		var img    = canvas.toDataURL('image/png');
-		e.target.href = img;
+		// var canvas = document.querySelector('canvas');
+		// canvas.toBlob(function(blob){
+		// 	var url = URL.createObjectURL(blob);
+		// 	// e.target.href = url;
+		// 	e.target.setAttribute('href', url);
+		// 	e.target.setAttribute('download', 'cropped.jpeg');
+		// });
+  
+		// var img    = canvas.toDataURL('image/jpeg');
+		//e.target.href = img;// localStorage.getItem('saved-image-example');
+		// window.location.href = img;
+
+		// var iframe = '<iframe width="100%" height="100%" src=' + img + '></iframe>';
+		// var x = window.open();
+		// x.document.open();
+		// x.document.write(iframe);
+		// x.document.close();
+		// localStorage.setItem('saved-image-example', canvas.toDataURL('image/png'));
+		// e.target.href = localStorage.getItem('saved-image-example');
+
 	}
 
 	/** 
@@ -157,7 +188,7 @@ class Potong {
 		let download = document.querySelector('.btn-download');
 		let left = (this.mouseEvent.clientX - ((document.body.clientWidth - this.canvas.clientWidth) / 2) - this.bodyMargin);
 		let canvas = document.getElementById('CanvasOutput');
-		// canvas.setAttribute('crossOrigin', 'anonymous');
+		
 		let context = canvas.getContext('2d');
 		let sourceX = Math.round((this.reverseX ? (left - this.sourceOffsetX) : (selector.x - this.sourceOffsetX)) * this.imgWidthRatio);//(selector.x);
 		let sourceY = Math.round((this.reverseY ? (this.mouseEvent.clientY - this.bodyMargin) : selector.y) * this.imgWidthRatio);
@@ -169,7 +200,6 @@ class Potong {
 		let destinationHeight = sourceHeight;
 		
 		context.drawImage(this.mainImage, sourceX, sourceY, sourceWidth, sourceHeight, destinationX, destinationY, destinationWidth, destinationHeight);
-		download.addEventListener('click', this.download);
 	}
 
 	/**
@@ -399,8 +429,8 @@ class Potong {
 		imgClass.value = 'img-krop';
 		imageEl.setAttributeNode(imgClass);
 		imageEl.setAttributeNode(imgSource);
-		imageEl.setAttribute('crossOrigin', 'anonymous');
-
+		imageEl.setAttribute('crossOrigin', 'Anonymous');
+		imgBg.setAttribute('crossOrigin', 'Anonymous');
 		container.appendChild(imgBg);
 		container.appendChild(imageEl);
 

@@ -67,6 +67,8 @@ body{
 	width: auto;
 	margin: 0 auto;
 	padding: 5px;
+	background: ivory;
+	text-align: center;
 }
 
 .canvas{
