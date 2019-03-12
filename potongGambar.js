@@ -25,8 +25,10 @@ class Potong {
 		this.isResizing;
 		this.initialSelectorX;
 		this.initialSelectorY;
-		this.imageSource;
+		this.browsedImage;
+		this.imageSource = 'https://images.pexels.com/photos/1233528/pexels-photo-1233528.jpeg';
 		this.mouseEvent;
+
 	}
 
 	run() {
@@ -35,11 +37,11 @@ class Potong {
 		this.renderButton();
 		this.setImage();
 
-		this.imageSource = document.getElementById('imageSource');
+		this.browsedImage = document.getElementById('imageSource');
 		this.canvas = document.getElementById(this.canvas);
 		this.krop = document.getElementById(this.krop);
 		this.mainImage = document.images[1];
-		this.imageSource.addEventListener('change', this.onImageSourceChange.bind(this));
+		this.browsedImage.addEventListener('change', this.onImageSourceChange.bind(this));
 
 		this.canvas.addEventListener('click', this.canvasHandler.bind(this));
 		this.canvas.addEventListener('mousedown', this.canvasHandler.bind(this));
@@ -111,7 +113,7 @@ class Potong {
 		let role = document.createAttribute('role');
 		let id = document.createAttribute('id');
 		let height = document.createAttribute('height');
-		let button = document.createElement('button');
+		let button = document.createElement('a');
 		role.value = 'document';
 		width.value = Math.round((selector.width) * this.imgWidthRatio);
 		id.value = 'CanvasOutput';
@@ -142,10 +144,10 @@ class Potong {
 		// console.log(this.output.clientWidth, document.body.clientWidth);
 	}
 
-	download(){
+	download(e){
 		var canvas = document.querySelector('canvas');
 		var img    = canvas.toDataURL('image/png');
-		document.write('<img src='+img+'/>');
+		e.target.href = img;
 	}
 
 	/** 
@@ -240,7 +242,7 @@ class Potong {
 	 */
 	onMouseDown(e) {
 		if (this.mainImage.getAttribute('style') != '') {
-			this.mainImage.removeAttribute('style');
+			this.mainImage.style.clipPath = 'none';
 			this.mainImage.style.left = this.mainImage.dataset.offsetX + 'px';
 		}
 
@@ -359,35 +361,49 @@ class Potong {
 		var cid = document.createAttribute('id');
 		var cClass = document.createAttribute('class');
 
-		var imgBg = document.createElement('IMG');
-		imgBg.setAttribute('id', 'imageBackground');
-		imgBg.setAttribute('src', 'img/image-1.jpeg');
-		imgBg.setAttribute('class', 'image-background');
+	
 
 		cClass.value = 'canvas';
 		cid.value = 'Canvas';
 		container.setAttributeNode(cid);
 		container.setAttributeNode(cClass);
 
-		container.appendChild(imgBg);
 		this.wrapper.appendChild(container);
 	}
 
 	setImage() {
 		var container = document.getElementById('Canvas');
-		var image = document.createElement('IMG');
+		var imageEl = document.createElement('IMG');
+		var imageInit = document.createElement('IMG');
 		var imgClass = document.createAttribute('class');
 		var imgSource = document.createAttribute('src');
+		var imgBg = document.createElement('IMG');
 
-		imgSource.value = '../image-1.jpeg';
+		imgBg.setAttribute('id', 'imageBackground');
+		imgBg.setAttribute('src', this.imageSource);
+		imgBg.setAttribute('class', 'image-background');
+
+		imageInit.setAttribute('class','image-init');
+		imageInit.setAttribute('src', this.imageSource);
+		container.appendChild(imageInit);
+
+		imageInit.addEventListener('load', (e)=>{
+			var target = e.target;
+			let ratio = (960 - ((target.naturalWidth*500)/target.naturalHeight))/2;			
+			imageEl.setAttribute('style', 'left:'+ ratio + 'px');
+			imgBg.setAttribute('style', 'left:'+ ratio + 'px');
+		});
+
+		imageInit.remove();
+		imgSource.value = this.imageSource;
 		imgClass.value = 'img-krop';
+		imageEl.setAttributeNode(imgClass);
+		imageEl.setAttributeNode(imgSource);
+		imageEl.setAttribute('crossOrigin', 'anonymous');
 
+		container.appendChild(imgBg);
+		container.appendChild(imageEl);
 
-		image.setAttributeNode(imgClass);
-		image.setAttributeNode(imgSource);
-		// image.setAttribute('crossOrigin', 'Anonymous');
-
-		container.appendChild(image);
 	}
 
 	renderButton() {

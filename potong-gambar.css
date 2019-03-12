@@ -66,6 +66,7 @@ body{
 	max-width: 100px;
 	width: auto;
 	margin: 0 auto;
+	padding: 5px;
 }
 
 .canvas{
@@ -80,23 +81,27 @@ body{
 .image-background{
 	content: '';
 	position: absolute;
-	top: 0;
-	left: 105px;
+	/* left: 105px; */
 	display: block;
 	opacity: .5;
-	max-width: 750px;
+	/* max-width: 750px; */
 	max-height: 500px;
 	width: auto;
 	height: auto;
 }
 
 .img-krop{
+	/* max-width: 750px; */
 	width: auto;
+	height: auto;
 	max-height: 500px;
 	position: absolute;
-	top: 0;
-	left: 105px;
-	
+	/* left: 105px; */
+}
+
+.image-init{
+	position: absolute;
+	left: -9000px;
 }
 
 .selector-default{
