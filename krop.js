@@ -1,6 +1,6 @@
 'use strict';
 
-class Potong {
+class Krop {
 	constructor(obj) {
 		this.wrapper = document.getElementById('kropBar');
 		this.canvas = obj.canvas;
@@ -128,14 +128,10 @@ class Potong {
 			return false;
 		}
 
-
-
 		canvas.setAttributeNode(role);
 		canvas.setAttributeNode(width);
 		canvas.setAttributeNode(id);
 		canvas.setAttributeNode(height);
-
-		
 		
 		this.output.appendChild(canvas);
 		this.output.appendChild(button);
@@ -148,7 +144,6 @@ class Potong {
 			button.setAttribute('href', url);
 			button.setAttribute('download', 'cropped.jpeg');
 		});
-		// button.addEventListener('click', this.download);
 
 
 		this.output.style.left = ((overlay.clientWidth - this.output.clientWidth) / 2) + 'px';
@@ -158,34 +153,10 @@ class Potong {
 		// console.log(this.output.clientWidth, document.body.clientWidth);
 	}
 
-	download(e){
-		// var canvas = document.querySelector('canvas');
-		// canvas.toBlob(function(blob){
-		// 	var url = URL.createObjectURL(blob);
-		// 	// e.target.href = url;
-		// 	e.target.setAttribute('href', url);
-		// 	e.target.setAttribute('download', 'cropped.jpeg');
-		// });
-  
-		// var img    = canvas.toDataURL('image/jpeg');
-		//e.target.href = img;// localStorage.getItem('saved-image-example');
-		// window.location.href = img;
-
-		// var iframe = '<iframe width="100%" height="100%" src=' + img + '></iframe>';
-		// var x = window.open();
-		// x.document.open();
-		// x.document.write(iframe);
-		// x.document.close();
-		// localStorage.setItem('saved-image-example', canvas.toDataURL('image/png'));
-		// e.target.href = localStorage.getItem('saved-image-example');
-
-	}
-
 	/** 
 	 * Draw onto canvas 
 	*/
 	draw(selector) {
-		let download = document.querySelector('.btn-download');
 		let left = (this.mouseEvent.clientX - ((document.body.clientWidth - this.canvas.clientWidth) / 2) - this.bodyMargin);
 		let canvas = document.getElementById('CanvasOutput');
 		
@@ -495,5 +466,5 @@ var settings = {
 	'canvas': 'Canvas',
 	'id': 'Selector'
 };
-var gunting = new Potong(settings);
+var gunting = new Krop(settings);
 gunting.run();
