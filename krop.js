@@ -97,7 +97,7 @@ class Krop {
 
 	kropHandler() {
 		if (!this.selector) {
-			alert('No area selected');
+			alert('No image area selected');
 			return false;
 		}
 
@@ -124,7 +124,7 @@ class Krop {
 		
 
 		if (isNaN(width.value)) {
-			alert('make sure selec area');
+			alert('No image area selected');
 			return false;
 		}
 
@@ -137,14 +137,6 @@ class Krop {
 		this.output.appendChild(button);
 		this.toggleModal(overlay);
 		this.draw(selector);
-
-		canvas.toBlob(function(blob){
-			var url = URL.createObjectURL(blob);
-			// e.target.href = url;
-			button.setAttribute('href', url);
-			button.setAttribute('download', 'cropped.jpeg');
-		});
-
 
 		this.output.style.left = ((overlay.clientWidth - this.output.clientWidth) / 2) + 'px';
 		this.output.style.top = ((overlay.clientHeight - this.output.clientHeight) / 2) + 'px';
@@ -171,6 +163,24 @@ class Krop {
 		let destinationHeight = sourceHeight;
 		
 		context.drawImage(this.mainImage, sourceX, sourceY, sourceWidth, sourceHeight, destinationX, destinationY, destinationWidth, destinationHeight);
+
+		canvas.toBlob(function (blob) {
+			var button = document.querySelector('.btn-download');
+			var url = URL.createObjectURL(blob);
+			// e.target.href = url;
+			button.setAttribute('href', url);
+			button.setAttribute('download', 'cropped.jpeg');
+		});
+	}
+
+	download(canvas) {
+		canvas.toBlob(function (blob) {
+			var button = document.querySelector('.btn-download');
+			var url = URL.createObjectURL(blob);
+			// e.target.href = url;
+			button.setAttribute('href', url);
+			button.setAttribute('download', 'cropped.jpeg');
+		});
 	}
 
 	/**
