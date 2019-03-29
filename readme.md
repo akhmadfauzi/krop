@@ -9,4 +9,4 @@ The idea came from my own problem in the past when i built an ecommerce and the 
  - Free Selection
 
 
-[Krop] : <http://krop.akhmadfauzi.com>
+ [Krop]: <http://krop.akhmadfauzi.com>
