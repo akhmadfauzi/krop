@@ -252,8 +252,9 @@ class Krop {
 	 * @event MouseDown 
 	 */
 	onMouseDown(e) {
-		if (this.mainImage.getAttribute('style') != '') {
-			this.mainImage.style.clipPath = 'none';
+		
+		if (e.target.id !=='Selector' && this.mainImage.getAttribute('style') != '') {
+			// this.mainImage.style.clipPath = 'none';
 			this.mainImage.style.left = this.mainImage.dataset.offsetX + 'px';
 		}
 
@@ -286,8 +287,8 @@ class Krop {
 		if (this.isResizing) {
 			let height = ((e.clientY - this.initialSelectorY) - this.bodyMargin);
 			let width = ((e.clientX) - this.initialSelectorX - ((document.body.clientWidth - this.canvas.clientWidth) / 2) - this.bodyMargin);
-			let left = (e.clientX - ((document.body.clientWidth - this.canvas.clientWidth) / 2) - this.bodyMargin);
-			let right = (e.clientX - ((document.body.clientWidth - this.canvas.clientWidth) / 2) - this.bodyMargin);
+			// let left = (e.clientX - ((document.body.clientWidth - this.canvas.clientWidth) / 2) - this.bodyMargin);
+			// let right = (e.clientX - ((document.body.clientWidth - this.canvas.clientWidth) / 2) - this.bodyMargin);
 
 			if (width < 0) {
 				if (this.reverseX == false) {
@@ -324,7 +325,7 @@ class Krop {
 			this.selector.style.width = (width >= this.canvas.clientWidth ? this.canvas.clientWidth : width) + 'px';
 			this.setClip(this.initialSelectorX, this.initialSelectorY, e);
 			this.selector.dataset.selectorDetails = JSON.stringify({ x: this.initialSelectorX, y: this.initialSelectorY, width: width, height: height });
-			this.displayCoordinates(e, width, height, left, right);
+			// this.displayCoordinates(e, width, height, left, right);
 		}
 	}
 
@@ -361,7 +362,7 @@ class Krop {
 			this.selector.style.left = currentLeft + 'px';
 			this.selector.dataset.selectorDetails = JSON.stringify({ x: currentLeft, y: currentTop, width: this.selector.clientWidth, height: this.selector.clientHeight });
 
-			this.setClip(currentLeft, currentTop);
+			this.setClip(currentLeft, currentTop, e);
 
 		}
 	}
@@ -476,5 +477,5 @@ var settings = {
 	'canvas': 'Canvas',
 	'id': 'Selector'
 };
-var gunting = new Krop(settings);
-gunting.run();
+var krop = new Krop(settings);
+krop.run();

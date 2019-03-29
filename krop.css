@@ -89,13 +89,13 @@ body{
 	/* max-width: 750px; */
 	max-height: 500px;
 	width: auto;
-	height: auto;
+	height: 500px;
 }
 
 .img-krop{
 	/* max-width: 750px; */
 	width: auto;
-	height: auto;
+	height: 500px;
 	max-height: 500px;
 	position: absolute;
 	/* left: 105px; */
